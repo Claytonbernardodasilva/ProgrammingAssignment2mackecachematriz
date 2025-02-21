@@ -1,0 +1,49 @@
+# Função que cria um objeto especial de matriz que pode armazenar em cache seu inverso
+makeCacheMatrix <- function(x = matrix()) {
+  inv <- NULL  # Inicializa o inverso como NULL
+  
+  set <- function(y) {
+    x <<- y
+    inv <<- NULL  # Reseta o cache sempre que a matriz é alterada
+  }
+  
+  get <- function() x  # Retorna a matriz atual
+  
+  setInverse <- function(inverse) inv <<- inverse  # Armazena o inverso no cache
+  
+  getInverse <- function() inv  # Retorna o inverso armazenado no cache
+  
+  list(set = set, get = get, setInverse = setInverse, getInverse = getInverse)
+}
+
+# Função que calcula o inverso da matriz ou retorna o valor armazenado em cache
+cacheSolve <- function(x, ...) {
+  inv <- x$getInverse()  # Obtém o inverso armazenado
+  
+  # Se o inverso já estiver no cache, retorna-o
+  if (!is.null(inv)) {
+    message("Obtendo o inverso do cache")
+    return(inv)
+  }
+  
+  # Caso contrário, calcula o inverso
+  mat <- x$get()  # Obtém a matriz original
+  inv <- solve(mat, ...)  # Calcula o inverso
+  x$setInverse(inv)  # Armazena o inverso no cache
+  inv
+}
+
+# Exemplo de uso
+# Criando uma matriz quadrada invertível
+mat <- matrix(c(2, -1, 0, 1), nrow = 2, ncol = 2)
+
+# Criando o objeto especial da matriz
+cachedMatrix <- makeCacheMatrix(mat)
+
+# Calculando o inverso pela primeira vez (será calculado e armazenado em cache)
+inverse <- cacheSolve(cachedMatrix)
+print(inverse)
+
+# Obtendo o inverso novamente (desta vez será recuperado do cache)
+inverse_cached <- cacheSolve(cachedMatrix)
+print(inverse_cached)
